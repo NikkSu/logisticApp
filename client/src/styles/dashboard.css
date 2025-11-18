@@ -1,0 +1,210 @@
+/* общий фон */
+body {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    background-color: #1b1b1b;
+    color: #eee;
+}
+
+/* контейнер */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* кнопка меню — left: 7% */
+.floating-menu-btn {
+    position: fixed;
+    top: 18px;
+    left: 7%;
+    background: linear-gradient(180deg, #8c5eff, #6f48ff);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    z-index: 220;
+    box-shadow: 0 6px 18px rgba(140,94,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* меню: справа от кнопки — left = calc(7% + 56px) (56px — приблизит. ширина кнопки) */
+.top-dropdown {
+    position: fixed;
+    top: 0;
+    left: calc(7% + 56px);
+    width: 260px;
+    background: #242424;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    padding: 14px;
+    z-index: 210;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* ссылка-элементы меню */
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.profile-container input {
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.profile-container input:focus {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.02);
+}
+
+.sidebar-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #ddd;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.55s ease, color 0.55s ease;
+    font-size: 14px;
+}
+
+.sidebar-btn:hover {
+    background: rgba(140,94,255,0.12);
+    color: #fff;
+}
+
+.sidebar-btn.active {
+    background: linear-gradient(90deg, rgba(140,94,255,0.28), rgba(180,142,255,0.12));
+    color: #fff;
+}
+
+/* в кнопке скрытый текст можно показать/скрыть при нужде */
+.btn-label {
+    white-space: nowrap;
+}
+
+/* кнопка выхода */
+.logout-btn {
+    margin-top: 6px;
+    background: #3a3a3a;
+    border: none;
+    color: #ff7777;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.logout-btn:hover{
+    background: #ff7777 ;
+    color: #3a3a3a ;
+    transition: background 0.55s ease, color 0.55s ease;;
+}
+/* основной контент */
+.main-content {
+    flex: 1;
+    padding: 64px 48px;
+}
+
+.dashboard-header h1 {
+    color: #8c5eff;
+    font-size: 1.6rem;
+    margin: 0;
+}
+
+.username {
+    color: #fff;
+    font-weight: 700;
+}
+
+.tab-content {
+    margin-top: 28px;
+    background: #2a2a2a;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 6px 18px rgba(140,94,255,0.06);
+    color: #eaeaea;
+}
+.notifications-wrapper {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 999;
+}
+
+.notification-card {
+    background: rgba(140,94,255,0.12);
+    border-left: 4px solid #007bff;
+    padding: 12px 16px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    min-width: 280px;
+    position: relative;
+    font-size: 14px;
+}
+
+.notification-card .close-btn {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #ffffff;
+    transition: color 0.2s;
+}
+
+.notification-card .close-btn:hover {
+    color: #8c5eff;
+}
+.dashboard-home h2 {
+    margin-bottom: 20px;
+    color: #ddd;
+}
+
+.stats-wrapper {
+    margin-top: 10px;
+}
+
+.stats-cards {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    background: #2b2b2b;
+    padding: 16px 20px;
+    border-radius: 12px;
+    min-width: 130px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.stat-number {
+    font-size: 28px;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #ccc;
+}
+
