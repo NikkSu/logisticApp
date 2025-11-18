@@ -1,0 +1,290 @@
+/* === Общие стили === */
+body {
+    background-color: #1b1b1b;
+    font-family: "Inter", sans-serif;
+    color: #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.auth-server-error {
+    color: #ff7777;
+    background: rgba(255, 119, 119, 0.1);
+    border: 1px solid rgba(255, 119, 119, 0.25);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-top: 14px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* === Контейнер === */
+.auth-container {
+    width: 440px;
+    height: 540px;
+    background: #2a2a2a;
+    border-radius: 22px;
+    padding: 35px 40px 50px;
+    position: relative;
+    box-shadow: 0 0 25px rgba(140, 94, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow: hidden;
+    animation: fadeIn 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === Тогл === */
+.auth-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #1f1f1f;
+    border-radius: 50px;
+    padding: 5px;
+    margin-bottom: 50px;
+    width: 100%;
+    position: relative;
+}
+
+.toggle-btn {
+    flex: 1;
+    text-align: center;
+    color: #aaa;
+    padding: 10px 0;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    z-index: 2;
+}
+
+.toggle-btn.active {
+    color: #fff;
+}
+
+.toggle-indicator {
+    position: absolute;
+    background: #8c5eff;
+    height: 85%;
+    width: 50%;
+    border-radius: 50px;
+    top: 7%;
+    left: 0;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.toggle-indicator.right {
+    left: 50%;
+}
+
+
+
+/* === Форма === */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 15px;
+    position: relative;
+    height: 300px;
+    justify-content: center;
+    align-items: center;
+}
+
+/* === Поля === */
+.auth-input-group {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+}
+
+.auth-input {
+    background: #1e1e1e;
+    border: none;
+    border-bottom: 2px solid #3b3b3b;
+    color: #eee;
+    padding: 12px 30px;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.3s ease;
+    border-radius: 8px 8px 0 0;
+    width: 85%;
+}
+
+.auth-input:focus {
+    border-color: #8c5eff;
+    box-shadow: 0 3px 10px rgba(140, 94, 255, 0.3);
+}
+
+/* Ошибка */
+.auth-input.error {
+    border-bottom-color: #ff5f5f;
+    box-shadow: 0 4px 10px -6px rgba(255, 95, 95, 0.8);
+}
+.auth-error {
+    color: #ff5f5f;
+    font-size: 12px;
+    margin-top: 4px;
+    padding-left: 4px;
+    transition: opacity 0.3s ease;
+}
+/* === Текст ошибок === */
+.auth-submit {
+    position: absolute;
+    right: 39.5%;
+    top: 130%;
+    transform: translateY(-50%);
+    background: #1e1e1e;
+    border-radius: 50%;
+    width: 90px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 1px solid #8c5eff;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(140, 94, 255, 0);
+    animation: pulse 2.5s infinite ease-in-out;
+    z-index: 3;
+}
+
+
+.auth-submit svg {
+    width: 46px;
+    height: 46px;
+    fill: #8c5eff;
+    transition: all 0.3s ease;
+}
+
+.auth-submit:hover {
+    transform: translateY(-50%) scale(1.08);
+    background: #8c5eff;
+    box-shadow: 0 0 20px rgba(140, 94, 255, 0.8);
+}
+
+.auth-submit:hover svg {
+    fill: #fff;
+}
+
+/* === Пульс === */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(140, 94, 255, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(140, 94, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(140, 94, 255, 0); }
+}
+
+/* === Кнопка "Забыли пароль" === */
+.forgot-password {
+    color: #8c5eff;
+    font-size: 14px;
+    text-align: center;
+    margin-left: 70%;
+    cursor: pointer;
+    margin-top: 0px;
+    transition: 0.3s;
+}
+
+.forgot-password:hover {
+    color: #a982ff;
+}
+
+/* === Кнопки соцсетей === */
+
+
+.social-btn {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.social-btn:hover {
+    border-color: #8c5eff;
+    box-shadow: 0 0 15px rgba(140, 94, 255, 0.4);
+}
+
+.social-btn img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.social-btn.google svg {
+    width: 26px;
+    height: 26px;
+}
+.social-btn.discord{
+    position: absolute;
+    top: 122%;
+    left: 22%;
+}
+.social-btn.google{
+    position: absolute;
+    top: 122%;
+    right: 22%;
+}
+.back-btn {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    background: transparent;
+    border: 1.8px solid #8c5eff;
+    color: #8c5eff;
+
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+
+    transition: all 0.25s ease;
+    width: fit-content;
+}
+
+.back-btn:hover {
+    background: #8c5eff;
+    color: #fff;
+}
+
+.back-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    transition: transform 0.3s ease;
+}
+
+.back-btn:hover svg {
+    transform: translateX(-3px);
+}

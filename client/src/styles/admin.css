@@ -1,0 +1,121 @@
+/* ===== Основная сетка для страниц ===== */
+.admin-page {
+    padding: 20px 30px;
+    color: #eee;
+}
+
+.page-title {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+/* ===== GRID ===== */
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+/* ===== Карточка ===== */
+.admin-card {
+    background: #242424;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 4px 14px rgba(140, 94, 255, 0.15);
+    transition: 0.25s;
+}
+
+.admin-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(140, 94, 255, 0.25);
+}
+
+.admin-card h3 {
+    margin: 0;
+    color: #fff;
+}
+
+/* ===== Роль ===== */
+.role-badge {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.role-user {
+    background: #3b3b3b;
+    color: #ccc;
+}
+
+.role-admin {
+    background: #8c5eff;
+    color: #fff;
+}
+
+/* ===== Кнопки ===== */
+.btn {
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.25s;
+}
+
+.btn.primary {
+    background: linear-gradient(135deg, #8c5eff, #6f48ff);
+    color: #fff;
+}
+
+.btn.primary:hover {
+    background: linear-gradient(135deg, #a87fff, #805aff);
+}
+
+.btn.ghost {
+    background: #6f48ff;
+    color: #fff;
+}
+
+.btn.ghost:hover {
+    background: linear-gradient(135deg, #a87fff, #805aff);
+}
+
+.btn.danger {
+    background: #ff3b3b;
+    color: #fff;
+}
+
+.btn.danger:hover {
+    background: #ff6363;
+}
+
+.card-actions {
+    margin-top: 14px;
+    display: flex;
+    gap: 10px;
+}
+
+/* ===== Модалки ===== */
+.modal-username {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    color: #ddd;
+    text-align: center;
+}
+
+.modal-actions-block {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.modal-actions-block p {
+    margin-bottom: 10px;
+    color: #ccc;
+}
+
+.full-width {
+    width: 100%;
+    margin-top: 12px;
+}
