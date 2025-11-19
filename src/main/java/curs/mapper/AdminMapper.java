@@ -3,6 +3,7 @@ package curs.mapper;
 import curs.dto.*;
 import curs.model.*;
 import curs.model.SupplierRequest;
+import curs.model.enums.Role;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,7 +19,16 @@ public class AdminMapper {
         dto.setAvatarPath(u.getAvatarPath());
         return dto;
     }
-
+        public User toUser(AdminUserDto dto) {
+        User user = new User();
+        user.setId(dto.getId());
+        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        user.setRole(Role.valueOf(dto.getRole()));
+        user.setAvatarPath(dto.getAvatarPath());
+        user.setPassword(dto.getPassword());
+        return user;
+        }
     public CompanyDto toCompanyDto(Company c) {
         CompanyDto dto = new CompanyDto();
         dto.setId(c.getId());
