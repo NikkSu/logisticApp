@@ -27,6 +27,7 @@ public class AdminService {
     private final NotificationService notificationService;
 
     // ---- Users ----
+    public User createUser(User u) { return userRepository.save(u); }
     public List<AdminUserDto> listUsers() {
         return userRepository.findAll().stream().map(mapper::toAdminUserDto).collect(Collectors.toList());
     }

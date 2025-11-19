@@ -1,6 +1,8 @@
 package curs.controller;
 
 import curs.dto.*;
+import curs.mapper.AdminMapper;
+import curs.model.User;
 import curs.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
+    private final AdminMapper adminMapper;
 
     // --- USERS ---
     @GetMapping("/users")
@@ -38,7 +41,14 @@ public class AdminController {
         adminService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+        @PostMapping("/users/create")
+        public ResponseEntity<AdminUserDto> createUser(@RequestBody AdminUserDto user) {
+            User entity = adminMapper.toUser(user);
+            User saved = adminService.createUser(entity);
+            AdminUserDto response = adminMapper.toAdminUserDto(saved);
 
+            return ResponseEntity.ok(response);
+        }
     // --- COMPANIES ---
     @GetMapping("/companies")
     public ResponseEntity<List<CompanyDto>> listCompanies() {

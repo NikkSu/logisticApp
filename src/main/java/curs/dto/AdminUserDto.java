@@ -8,4 +8,5 @@ public class AdminUserDto {
     private String role;
     private String avatarPath;
     private Long companyId;
+    private String password;
 }
