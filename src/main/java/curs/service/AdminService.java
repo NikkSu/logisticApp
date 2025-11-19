@@ -2,6 +2,7 @@ package curs.service;
 
 import curs.dto.*;
 import curs.mapper.AdminMapper;
+import curs.mapper.CompanyMapper;
 import curs.model.*;
 import curs.model.SupplierRequest;
 import curs.repo.*;
@@ -22,7 +23,7 @@ public class AdminService {
     private final SupplierRequestRepository supplierRequestRepository;
     private final OrderRepository orderRepository;
     private final NotificationRepository notificationRepository;
-
+    private final CompanyMapper companyMapper;
     private final AdminMapper mapper;
     private final NotificationService notificationService;
 
@@ -66,6 +67,28 @@ public class AdminService {
     // ---- Companies ----
     public List<CompanyDto> listCompanies() {
         return companyRepository.findAll().stream().map(mapper::toCompanyDto).collect(Collectors.toList());
+    }
+    public CompanyDto createCompanyAsAdmin(Long ownerId, String name, String address, String description) {
+
+        User owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (companyRepository.existsByNameIgnoreCase(name)) {
+            throw new RuntimeException("Компания с таким именем уже существует");
+        }
+
+        Company company = new Company();
+        company.setName(name);
+        company.setAddress(address);
+        company.setDescription(description);
+        company.setOwner(owner);
+
+        companyRepository.save(company);
+
+        owner.setCompany(company);
+        userRepository.save(owner);
+
+        return companyMapper.toDto(company);
     }
 
     public CompanyDto getCompany(Long id) {

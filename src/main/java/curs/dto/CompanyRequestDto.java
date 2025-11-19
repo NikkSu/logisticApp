@@ -11,4 +11,5 @@ public class CompanyRequestDto {
     private Long companyId;
     private String companyName;
     private CompanyRequestStatus status;
+    private String ownerName;
 }

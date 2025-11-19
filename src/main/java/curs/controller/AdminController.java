@@ -54,6 +54,18 @@ public class AdminController {
     public ResponseEntity<List<CompanyDto>> listCompanies() {
         return ResponseEntity.ok(adminService.listCompanies());
     }
+    @PostMapping("/companies/create")
+    public ResponseEntity<CompanyDto> createCompany(@RequestBody CompanyDto dto) {
+
+        CompanyDto saved = adminService.createCompanyAsAdmin(
+                dto.getOwnerId(),
+                dto.getName(),
+                dto.getAddress(),
+                dto.getDescription()
+        );
+
+        return ResponseEntity.ok(saved);
+    }
 
     @GetMapping("/companies/{id}")
     public ResponseEntity<CompanyDto> getCompany(@PathVariable Long id) {
