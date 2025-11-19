@@ -37,6 +37,7 @@ public class AdminMapper {
         dto.setDescription(c.getDescription());
         dto.setLogoPath(c.getLogoPath());
         dto.setOwnerId(c.getOwner() != null ? c.getOwner().getId() : null);
+        dto.setOwnerName(c.getOwner().getUsername() != null ? c.getOwner().getUsername() : null);
         return dto;
     }
 

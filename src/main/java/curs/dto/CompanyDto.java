@@ -10,4 +10,5 @@ public class CompanyDto {
     private String logoPath;
     private String description;
     private Long ownerId;
+    private String ownerName;
 }
