@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -172,4 +173,24 @@ public class AdminService {
     public void deleteNotification(Long id) {
         notificationRepository.deleteById(id);
     }
+    @Transactional
+    public NotificationDto createNotification(CreateNotificationRequest req) {
+
+        Notification n = new Notification();
+        n.setMessage(req.getMessage());
+        n.setCreatedAt(LocalDateTime.now());
+        n.setRead(false);
+
+        if (req.getUserId() != null) {
+            User u = userRepository.findById(req.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            n.setUser(u);
+        }
+
+        notificationRepository.save(n);
+
+        return mapper.toNotificationDto(n);
+    }
+
+
 }

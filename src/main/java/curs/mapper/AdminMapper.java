@@ -79,7 +79,17 @@ public class AdminMapper {
         dto.setMessage(n.getMessage());
         dto.setRead(n.isRead());
         dto.setCreatedAt(n.getCreatedAt());
-        dto.setUserId(n.getUser() != null ? n.getUser().getId() : null);
+
+        if (n.getUser() != null) {
+            dto.setUserId(n.getUser().getId());
+            dto.setUsername(n.getUser().getUsername());
+        } else {
+            dto.setUserId(null);
+            dto.setUsername(null);
+        }
+
         return dto;
     }
+
+
 }
