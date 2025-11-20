@@ -1,5 +1,6 @@
 package curs.service;
 
+import curs.dto.CreateOrderRequest;
 import curs.dto.OrderDTO;
 import curs.dto.OrderDetailDTO;
 import curs.mapper.OrderMapper;
@@ -50,10 +51,11 @@ public class OrderService {
 
 
     @Transactional
-    public OrderDTO createOrder(Long userId, Long supplierId, List<OrderItem> items) {
+    public OrderDTO createOrder(Long userId, CreateOrderRequest req) {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        Supplier supplier = supplierRepo.findById(supplierId)
+
+        Supplier supplier = supplierRepo.findById(req.getSupplierId())
                 .orElseThrow(() -> new RuntimeException("Supplier not found"));
 
         Order order = new Order();
@@ -63,12 +65,25 @@ public class OrderService {
         order.setSupplier(supplier);
         order.setCompany(user.getCompany());
 
-        items.forEach(i -> i.setOrder(order));
+        List<OrderItem> items = req.getItems().stream()
+                .map(i -> {
+                    OrderItem oi = new OrderItem();
+                    oi.setOrder(order);
+                    oi.setProductName(i.getProductName());
+                    oi.setQuantity(i.getQuantity());
+                    oi.setPrice(i.getPrice());
+                    return oi;
+                }).toList();
+
         order.setItems(items);
-        order.setTotalSum(items.stream()
-                .mapToDouble(i -> i.getPrice() * i.getQuantity()).sum());
+
+        order.setTotalSum(
+                items.stream().mapToDouble(i -> i.getPrice() * i.getQuantity()).sum()
+        );
 
         orderRepo.save(order);
+
         return mapper.toDto(order);
     }
+
 }

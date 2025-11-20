@@ -1,5 +1,6 @@
 package curs.controller;
 
+import curs.dto.CreateOrderRequest;
 import curs.dto.OrderDTO;
 import curs.service.OrderService;
 import curs.model.OrderItem;
@@ -29,18 +30,9 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestBody CreateOrderRequest req, Principal principal) {
+    public ResponseEntity<OrderDTO> createOrder(@RequestBody CreateOrderRequest req, Principal principal) {
         Long userId = serviceUserId(principal);
-        List<OrderItem> items = req.getItems().stream()
-                .map(i -> {
-                    OrderItem oi = new OrderItem();
-                    oi.setProductName(i.getProductName());
-                    oi.setQuantity(i.getQuantity());
-                    oi.setPrice(i.getPrice());
-                    return oi;
-                }).toList();
-
-        OrderDTO dto = service.createOrder(userId, req.getSupplierId(), items);
+        OrderDTO dto = service.createOrder(userId, req);
         return ResponseEntity.ok(dto);
     }
 
@@ -49,15 +41,5 @@ public class OrderController {
         return service.getUserIdByUsername(principal.getName());
     }
 
-    @Data
-    public static class CreateOrderRequest {
-        private Long supplierId;
-        private List<Item> items;
-        @Data
-        public static class Item {
-            private String productName;
-            private int quantity;
-            private double price;
-        }
-    }
+
 }

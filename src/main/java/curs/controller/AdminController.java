@@ -123,4 +123,9 @@ public class AdminController {
         adminService.deleteNotification(id);
         return ResponseEntity.noContent().build();
     }
+    @PostMapping("/notifications/create")
+    public ResponseEntity<NotificationDto> createNotification(@RequestBody CreateNotificationRequest req) {
+        return ResponseEntity.ok(adminService.createNotification(req));
+    }
+
 }
