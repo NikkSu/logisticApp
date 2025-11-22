@@ -10,6 +10,8 @@ import curs.model.enums.Role;
 import curs.model.enums.SupplierStatus;
 import curs.repo.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,9 +33,16 @@ public class AdminService {
     private final AdminMapper mapper;
     private final SupplierRequestMapper requestMapper;
     private final NotificationService notificationService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // ---- Users ----
-    public User createUser(User u) { return userRepository.save(u); }
+    public User createUser(User u) {
+        if (u.getPassword() == null || u.getPassword().isBlank()) {
+            u.setPassword(passwordEncoder.encode("123456")); // default password
+        }
+        return userRepository.save(u);
+    }
     public List<AdminUserDto> listUsers() {
         return userRepository.findAll().stream().map(mapper::toAdminUserDto).collect(Collectors.toList());
     }

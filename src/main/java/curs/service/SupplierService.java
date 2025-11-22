@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,8 +44,11 @@ public class SupplierService {
     }
 
     public SupplierRequest getStatus(User user) {
-        return supplierRequestRepository.findByUser(user).orElse(null);
+        List<SupplierRequest> list = supplierRequestRepository.findAllByUserOrderByCreatedAtDesc(user);
+        if (list.isEmpty()) return null;
+        return list.get(0); // возвращаем последнюю заявку
     }
+
 
     @Transactional
     public Supplier approveRequestToSupplier(Long requestId) {

@@ -20,16 +20,19 @@ public class AdminMapper {
         dto.setAvatarPath(u.getAvatarPath());
         return dto;
     }
-        public User toUser(AdminUserDto dto) {
-        User user = new User();
-        user.setId(dto.getId());
-        user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
-        user.setRole(Role.valueOf(dto.getRole()));
-        user.setAvatarPath(dto.getAvatarPath());
-        user.setPassword(dto.getPassword());
-        return user;
-        }
+    public User toUser(AdminUserDto dto) {
+        User u = new User();
+        u.setId(dto.getId());
+        u.setUsername(dto.getUsername());
+        u.setEmail(dto.getEmail());
+        u.setRole(Role.valueOf(dto.getRole()));
+
+        if (dto.getPassword() != null)
+            u.setPassword(dto.getPassword());
+
+        return u;
+    }
+
     public CompanyDto toCompanyDto(Company c) {
         CompanyDto dto = new CompanyDto();
         dto.setId(c.getId());
@@ -39,6 +42,17 @@ public class AdminMapper {
         dto.setLogoPath(c.getLogoPath());
         dto.setOwnerId(c.getOwner() != null ? c.getOwner().getId() : null);
         dto.setOwnerName(c.getOwner().getUsername() != null ? c.getOwner().getUsername() : null);
+        return dto;
+    }
+    public AdminSupplierRequestDto toAdminDto(SupplierRequest r) {
+        AdminSupplierRequestDto dto = new AdminSupplierRequestDto();
+        dto.setId(r.getId());
+        dto.setUserId(r.getUser().getId());
+        dto.setUserName(r.getUser().getUsername());
+        dto.setCompanyName(r.getCompanyName());
+        dto.setInn(r.getInn());
+        dto.setPhone(r.getPhone());
+        dto.setAddress(r.getAddress());
         return dto;
     }
 

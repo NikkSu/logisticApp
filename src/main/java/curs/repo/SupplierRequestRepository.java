@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SupplierRequestRepository extends JpaRepository<SupplierRequest, Long> {
+    List<SupplierRequest> findAllByUserOrderByCreatedAtDesc(User user);
     Optional<SupplierRequest> findByUser(User user);
     List<SupplierRequest> findAllByStatus(SupplierStatus status);
 }

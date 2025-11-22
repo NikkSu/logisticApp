@@ -1,9 +1,12 @@
 package curs.service;
 
+import ch.qos.logback.classic.encoder.JsonEncoder;
 import curs.mapper.UserMapper;
 import curs.model.User;
 import curs.repo.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -13,6 +16,9 @@ import curs.dto.UserDTO;
 public class UserService {
     private final UserRepository userRepository;
     private final CompanyService companyService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public UserService(UserRepository userRepository, CompanyService companyService) {
         this.userRepository = userRepository;
         this.companyService = companyService;
@@ -61,6 +67,12 @@ public class UserService {
 
         return UserMapper.toDto(user);
     }
-    public User create(User u) { return userRepository.save(u); }
+    public User createUser(User u) {
+        if (u.getPassword() == null || u.getPassword().isBlank()) {
+            u.setPassword(passwordEncoder.encode("123456")); // default password
+        }
+        return userRepository.save(u);
+    }
+
 
 }

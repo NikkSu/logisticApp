@@ -3,7 +3,10 @@ package curs.controller;
 import curs.dto.*;
 import curs.mapper.AdminMapper;
 import curs.model.User;
+import curs.model.enums.SupplierStatus;
+import curs.repo.SupplierRequestRepository;
 import curs.service.AdminService;
+import curs.service.SupplierService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
-
+    private final SupplierRequestRepository supplierRequestRepository;
     private final AdminService adminService;
     private final AdminMapper adminMapper;
 
@@ -80,9 +83,13 @@ public class AdminController {
 
     // --- SUPPLIERS & SUPPLIER REQUESTS ---
     @GetMapping("/supplier-requests")
-    public ResponseEntity<List<SupplierRequestDto>> listSupplierRequests() {
-        return ResponseEntity.ok(adminService.listPendingSupplierRequests());
+    public List<AdminSupplierRequestDto> listRequests() {
+        return supplierRequestRepository.findAllByStatus(SupplierStatus.PENDING)
+                .stream()
+                .map(adminMapper::toAdminDto)
+                .toList();
     }
+
 
     @PostMapping("/supplier-requests/{id}/approve")
     public ResponseEntity<AdminSupplierDto> approveSupplier(@PathVariable Long id) {
