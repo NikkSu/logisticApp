@@ -1,7 +1,9 @@
+// src/main/java/curs/controller/SupplierController.java
 package curs.controller;
 
-import curs.dto.SupplierRequest;
-import curs.model.Supplier;
+import curs.dto.SupplierRequestDto;
+import curs.mapper.SupplierRequestMapper;
+import curs.model.SupplierRequest;
 import curs.model.User;
 import curs.service.SupplierService;
 import curs.service.UserService;
@@ -17,18 +19,23 @@ public class SupplierController {
 
     private final SupplierService supplierService;
     private final UserService userService;
+    private final SupplierRequestMapper supplierRequestMapper;
 
     private User getUser(Principal principal) {
         return userService.findByUsername(principal.getName());
     }
 
     @PostMapping("/apply")
-    public Supplier apply(@RequestBody SupplierRequest request, Principal principal) {
-        return supplierService.apply(getUser(principal), request);
+    public SupplierRequestDto apply(@RequestBody SupplierRequestDto dto, Principal principal) {
+        User user = getUser(principal);
+        SupplierRequest req = supplierService.createRequest(user, dto);
+        return supplierRequestMapper.toDto(req);
     }
 
     @GetMapping("/status")
-    public Supplier getStatus(Principal principal) {
-        return supplierService.getStatus(getUser(principal));
+    public SupplierRequestDto getStatus(Principal principal) {
+        User user = getUser(principal);
+        SupplierRequest req = supplierService.getStatus(user);
+        return supplierRequestMapper.toDto(req);
     }
 }

@@ -1,9 +1,11 @@
+// src/main/java/curs/model/Supplier.java
 package curs.model;
 
 import curs.model.enums.SupplierStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "suppliers")
 @Data
@@ -14,7 +16,7 @@ public class Supplier {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", unique = true, nullable = false)
     private User user;
 
     private String companyName;
@@ -31,4 +33,3 @@ public class Supplier {
 
     private String rejectionReason;
 }
-

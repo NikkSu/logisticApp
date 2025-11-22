@@ -1,71 +1,78 @@
+// src/main/java/curs/service/SupplierService.java
 package curs.service;
 
-import curs.dto.SupplierRequest;
+import curs.dto.SupplierRequestDto;
 import curs.model.Supplier;
+import curs.model.SupplierRequest;
 import curs.model.User;
 import curs.model.enums.SupplierStatus;
 import curs.repo.SupplierRepository;
-import curs.repo.UserRepository;
+import curs.repo.SupplierRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import jakarta.transaction.Transactional;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class SupplierService {
 
+    private final SupplierRequestRepository supplierRequestRepository;
     private final SupplierRepository supplierRepository;
-    private final UserRepository userRepository;
 
-    public Supplier apply(User user, SupplierRequest req) {
+    public SupplierRequest createRequest(User user, SupplierRequestDto dto) {
+        Optional<SupplierRequest> existing = supplierRequestRepository.findByUser(user);
+        if (existing.isPresent() && existing.get().getStatus() == SupplierStatus.PENDING) {
+            throw new RuntimeException("Заявка уже отправлена");
+        }
 
-        supplierRepository.findByUser(user).ifPresent(s -> {
-            if (s.getStatus() == SupplierStatus.PENDING)
-                throw new RuntimeException("Заявка уже отправлена");
-        });
+        SupplierRequest r = new SupplierRequest();
+        r.setUser(user);
+        r.setCompanyName(dto.getCompanyName());
+        r.setInn(dto.getInn());
+        r.setAddress(dto.getAddress());
+        r.setDescription(dto.getDescription());
+        r.setWebsite(dto.getWebsite());
+        r.setPhone(dto.getPhone());
+        r.setStatus(SupplierStatus.PENDING);
+        r.setRejectionReason(null);
+
+        return supplierRequestRepository.save(r);
+    }
+
+    public SupplierRequest getStatus(User user) {
+        return supplierRequestRepository.findByUser(user).orElse(null);
+    }
+
+    @Transactional
+    public Supplier approveRequestToSupplier(Long requestId) {
+        SupplierRequest req = supplierRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+
+        req.setStatus(SupplierStatus.APPROVED);
+        req.setRejectionReason(null);
+        supplierRequestRepository.save(req);
 
         Supplier s = new Supplier();
-        s.setUser(user);
+        s.setUser(req.getUser());
         s.setCompanyName(req.getCompanyName());
         s.setInn(req.getInn());
         s.setAddress(req.getAddress());
         s.setDescription(req.getDescription());
         s.setWebsite(req.getWebsite());
         s.setPhone(req.getPhone());
-        s.setStatus(SupplierStatus.PENDING);
-
-        return supplierRepository.save(s);
-    }
-
-    public Supplier getStatus(User user) {
-        return supplierRepository.findByUser(user).orElse(null);
-    }
-    public List<Supplier> getPending() {
-        return supplierRepository.findAllByStatus(SupplierStatus.PENDING);
-    }
-
-    public List<Supplier> getAll() {
-        return supplierRepository.findAll();
-    }
-
-    public Supplier approve(Long id) {
-        Supplier s = supplierRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Supplier not found"));
-
         s.setStatus(SupplierStatus.APPROVED);
-        s.setRejectionReason(null);
 
         return supplierRepository.save(s);
     }
 
-    public Supplier reject(Long id, String reason) {
-        Supplier s = supplierRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Supplier not found"));
-
-        s.setStatus(SupplierStatus.REJECTED);
-        s.setRejectionReason(reason);
-
-        return supplierRepository.save(s);
+    @Transactional
+    public SupplierRequest rejectRequest(Long requestId, String reason) {
+        SupplierRequest req = supplierRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+        req.setStatus(SupplierStatus.REJECTED);
+        req.setRejectionReason(reason);
+        return supplierRequestRepository.save(req);
     }
 }

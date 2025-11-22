@@ -1,5 +1,7 @@
+// src/main/java/curs/model/SupplierRequest.java
 package curs.model;
 
+import curs.model.enums.SupplierStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -12,8 +14,9 @@ public class SupplierRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
-    @JoinColumn(name = "user_id")
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
     private User user;
 
     private String companyName;
@@ -25,12 +28,8 @@ public class SupplierRequest {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // заявка обработана админом?
-    private boolean approved = false;
+    @Enumerated(EnumType.STRING)
+    private SupplierStatus status;
 
-    // отклонена ли заявка?
-    private boolean rejected = false;
-
-    // причина отказа
     private String rejectionReason;
 }
