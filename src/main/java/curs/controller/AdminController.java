@@ -79,11 +79,6 @@ public class AdminController {
     }
 
     // --- SUPPLIERS & SUPPLIER REQUESTS ---
-    @GetMapping("/suppliers")
-    public ResponseEntity<List<AdminSupplierDto>> listSuppliers() {
-        return ResponseEntity.ok(adminService.listSuppliers());
-    }
-
     @GetMapping("/supplier-requests")
     public ResponseEntity<List<SupplierRequestDto>> listSupplierRequests() {
         return ResponseEntity.ok(adminService.listPendingSupplierRequests());

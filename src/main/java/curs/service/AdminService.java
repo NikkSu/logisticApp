@@ -3,8 +3,11 @@ package curs.service;
 import curs.dto.*;
 import curs.mapper.AdminMapper;
 import curs.mapper.CompanyMapper;
+import curs.mapper.SupplierRequestMapper;
 import curs.model.*;
 import curs.model.SupplierRequest;
+import curs.model.enums.Role;
+import curs.model.enums.SupplierStatus;
 import curs.repo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ public class AdminService {
     private final NotificationRepository notificationRepository;
     private final CompanyMapper companyMapper;
     private final AdminMapper mapper;
+    private final SupplierRequestMapper requestMapper;
     private final NotificationService notificationService;
 
     // ---- Users ----
@@ -112,48 +116,60 @@ public class AdminService {
 
     // ---- Suppliers & Requests ----
     public List<AdminSupplierDto> listSuppliers() {
-        return supplierRepository.findAll().stream().map(mapper::toAdminSupplierDto).collect(Collectors.toList());
-    }
-
-    public List<SupplierRequestDto> listPendingSupplierRequests() {
-        return supplierRequestRepository.findAllByApprovedFalse()
-                .stream()
-                .map(mapper::toSupplierRequestDto)
+        return supplierRepository.findAll().stream()
+                .map(mapper::toSupplierDto)
                 .collect(Collectors.toList());
     }
 
+    public List<SupplierRequestDto> listPendingSupplierRequests() {
+        return supplierRequestRepository.findAllByStatus(SupplierStatus.PENDING)
+                .stream()
+                .map(requestMapper::toDto)
+                .collect(Collectors.toList());
+    }
 
     @Transactional
     public AdminSupplierDto approveSupplier(Long requestId) {
-        SupplierRequest sr = supplierRequestRepository.findById(requestId).orElseThrow(() -> new RuntimeException("Request not found"));
-        // create supplier entity or activate it
-        Supplier s = supplierRepository.findByUser(sr.getUser())
-                .orElseGet(() -> {
-                    Supplier ns = new Supplier();
-                    ns.setUser(sr.getUser());
-                    ns.setCompanyName(sr.getCompanyName());
-                    ns.setInn(sr.getInn());
-                    ns.setAddress(sr.getAddress());
-                    ns.setDescription(sr.getDescription());
-                    ns.setWebsite(sr.getWebsite());
-                    ns.setPhone(sr.getPhone());
-                    ns.setStatus(curs.model.enums.SupplierStatus.APPROVED);
-                    return supplierRepository.save(ns);
-                });
-        sr.setApproved(true);
-        supplierRequestRepository.save(sr);
-        notificationService.createNotification(sr.getUser().getId(), "Ваша заявка поставщика одобрена.");
-        return mapper.toAdminSupplierDto(s);
+        SupplierRequest req = supplierRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+
+        req.setStatus(SupplierStatus.APPROVED);
+        req.setRejectionReason(null);
+        supplierRequestRepository.save(req);
+
+        Supplier s = new Supplier();
+        s.setUser(req.getUser());
+        s.setCompanyName(req.getCompanyName());
+        s.setInn(req.getInn());
+        s.setAddress(req.getAddress());
+        s.setDescription(req.getDescription());
+        s.setWebsite(req.getWebsite());
+        s.setPhone(req.getPhone());
+        s.setStatus(SupplierStatus.APPROVED);
+
+        s = supplierRepository.save(s);
+
+        User u = req.getUser();
+        if (u != null) {
+            u.setRole(Role.SUPPLIER);
+            userRepository.save(u);
+            notificationService.createNotification(u.getId(), "Ваша заявка поставщика одобрена.");
+        }
+
+        return mapper.toSupplierDto(s);
     }
 
     @Transactional
     public void rejectSupplier(Long requestId, String reason) {
-        SupplierRequest sr = supplierRequestRepository.findById(requestId).orElseThrow(() -> new RuntimeException("Request not found"));
-        sr.setApproved(true);
-        sr.setRejected(true);
-        sr.setRejectionReason(reason);
-        supplierRequestRepository.save(sr);
-        notificationService.createNotification(sr.getUser().getId(), "Ваша заявка поставщика отклонена. Причина: " + (reason == null ? "не указана" : reason));
+        SupplierRequest req = supplierRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+        req.setStatus(SupplierStatus.REJECTED);
+        req.setRejectionReason(reason);
+        supplierRequestRepository.save(req);
+        User u = req.getUser();
+        if (u != null) {
+            notificationService.createNotification(u.getId(), "Ваша заявка поставщика отклонена. Причина: " + (reason == null ? "не указана" : reason));
+        }
     }
 
     // ---- Orders ----

@@ -4,6 +4,7 @@ import curs.dto.*;
 import curs.model.*;
 import curs.model.SupplierRequest;
 import curs.model.enums.Role;
+import curs.model.enums.SupplierStatus;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -46,11 +47,26 @@ public class AdminMapper {
         dto.setId(s.getId());
         dto.setCompanyName(s.getCompanyName());
         dto.setInn(s.getInn());
-        dto.setStatus(s.getStatus() != null ? s.getStatus().name() : null);
+        dto.setStatus(s.getStatus() != null ? SupplierStatus.valueOf(s.getStatus().name()) : null);
         dto.setUserId(s.getUser() != null ? s.getUser().getId() : null);
         return dto;
     }
-
+    public AdminSupplierDto toSupplierDto(Supplier s) {
+        if (s == null) return null;
+        AdminSupplierDto dto = new AdminSupplierDto();
+        dto.setId(s.getId());
+        dto.setUserId(s.getUser() != null ? s.getUser().getId() : null);
+        dto.setUsername(s.getUser() != null ? s.getUser().getUsername() : null);
+        dto.setCompanyName(s.getCompanyName());
+        dto.setInn(s.getInn());
+        dto.setAddress(s.getAddress());
+        dto.setDescription(s.getDescription());
+        dto.setWebsite(s.getWebsite());
+        dto.setPhone(s.getPhone());
+        dto.setStatus(s.getStatus());
+        dto.setRejectionReason(s.getRejectionReason());
+        return dto;
+    }
     public SupplierRequestDto toSupplierRequestDto(SupplierRequest sr) {
         SupplierRequestDto dto = new SupplierRequestDto();
         dto.setId(sr.getId());

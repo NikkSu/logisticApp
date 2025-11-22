@@ -93,9 +93,11 @@ public class SecurityConfig {
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
                 if (jwtUtil.validateToken(token)) {
-                    String email = jwtUtil.extractEmail(token);
-                    var auth = new UsernamePasswordAuthenticationToken(email, null, java.util.List.of());
+                    String username = jwtUtil.extractUsername(token);
+                    var auth = new UsernamePasswordAuthenticationToken(username, null, java.util.List.of());
                     SecurityContextHolder.getContext().setAuthentication(auth);
+
+
                 }
             }
 
