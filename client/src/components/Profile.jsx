@@ -24,9 +24,22 @@ export default function ProfilePage() {
     const [loadingRequests, setLoadingRequests] = useState(false);
     const [error, setError] = useState("");
     const [passwordForm, setPasswordForm] = useState({ oldPassword: "", newPassword: "" });
+    const [supplierStatus, setSupplierStatus] = useState(null);
+    const [loadingSupplier, setLoadingSupplier] = useState(false);
+    const [showSupplierModal, setShowSupplierModal] = useState(false);
+    const [supplierForm, setSupplierForm] = useState({
+        companyName: "",
+        inn: "",
+        phone: "",
+        address: ""
+    });
+
 
     useEffect(() => {
         fetchMe();
+    }, []);
+    useEffect(() => {
+        fetchSupplierStatus();
     }, []);
 
     useEffect(() => {
@@ -83,6 +96,38 @@ export default function ProfilePage() {
             setError("Ошибка при загрузке аватара");
         }
     };
+    async function fetchSupplierStatus() {
+        try {
+            setLoadingSupplier(true);
+            const res = await axios.get(`${API_BASE}/supplier/status`, {
+                headers: getTokenHeader(),
+            });
+            setSupplierStatus(res.data);
+        } catch (e) {
+            console.error(e);
+            setSupplierStatus(null);
+        } finally {
+            setLoadingSupplier(false);
+        }
+    }
+
+    async function applyForSupplier() {
+        try {
+            const dto = { message: "Хочу стать поставщиком" };
+            await axios.post(`${API_BASE}/supplier/apply`, dto, {
+                headers: {
+                    ...getTokenHeader(),
+                    "Content-Type": "application/json",
+                },
+            });
+
+            await fetchSupplierStatus();
+            alert("Заявка отправлена");
+        } catch (e) {
+            console.error(e);
+            setError("Ошибка при отправке заявки");
+        }
+    }
 
     async function createCompany() {
         try {
@@ -124,6 +169,30 @@ export default function ProfilePage() {
     async function joinCompanyById(companyId) {
         try {
             await axios.post(`${API_BASE}/companies/${companyId}/join`, {}, { headers: getTokenHeader() });
+        } catch (e) {
+            console.error(e);
+            setError("Ошибка при отправке заявки");
+        }
+    }
+    async function sendSupplierRequest() {
+        try {
+            await axios.post(
+                `${API_BASE}/supplier/apply`,
+                supplierForm,
+                { headers: getTokenHeader() }
+            );
+
+            setShowSupplierModal(false);
+            setSupplierForm({
+                companyName: "",
+                inn: "",
+                phone: "",
+                address: ""
+            });
+
+            await fetchSupplierStatus();
+            alert("Заявка успешно отправлена!");
+
         } catch (e) {
             console.error(e);
             setError("Ошибка при отправке заявки");
@@ -273,6 +342,44 @@ export default function ProfilePage() {
                             Сменить пароль
                         </button>
                     </div>
+                    {/* === SUPPLIER REQUEST BLOCK === */}
+                    <div className="supplier-block" style={{marginTop: "20px"}}>
+                        <h4 style={{margin: "0 0 10px 0"}}>Стать поставщиком</h4>
+
+                        {loadingSupplier ? (
+                            <div className="muted">Загрузка...</div>
+                        ) : !supplierStatus ? (
+                            <>
+                                <p className="muted" style={{marginBottom: "10px"}}>
+                                    Подайте заявку, чтобы стать поставщиком и управлять товарами.
+                                </p>
+                                <button
+                                    className="btn primary"
+                                    onClick={() => setShowSupplierModal(true)}
+                                >
+                                    Подать заявку
+                                </button>
+                            </>
+                        ) : supplierStatus.status === "PENDING" ? (
+                            <p className="muted">Заявка отправлена и находится на рассмотрении…</p>
+                        ) : supplierStatus.status === "REJECTED" ? (
+                            <>
+                                <p style={{color: "#ff8080"}}>
+                                    Отклонено: {supplierStatus.reason || "Причина не указана"}
+                                </p>
+                                <button className="btn primary" onClick={() => setShowSupplierModal(true)}>
+                                    Подать снова
+                                </button>
+                            </>
+                        ) : supplierStatus.status === "APPROVED" ? (
+                            <p style={{color: "#8c5eff"}}>
+                                Вы одобрены как поставщик 🎉
+                                Теперь вам доступен функционал управления товарами.
+                            </p>
+                        ) : null}
+                    </div>
+
+
                 </div>
             </div>
 
@@ -508,6 +615,64 @@ export default function ProfilePage() {
                     </div>
                 </div>
             )}
+            {showSupplierModal && (
+                <div className="modal-overlay">
+                    <div className="modal card" style={{ width: "480px" }}>
+                        <button className="modal-close" onClick={() => setShowSupplierModal(false)}>✕</button>
+                        <h3>Заявка на поставщика</h3>
+
+                        <div className="form-row">
+                            <label>Название компании</label>
+                            <input
+                                value={supplierForm.companyName}
+                                onChange={(e) =>
+                                    setSupplierForm({ ...supplierForm, companyName: e.target.value })
+                                }
+                            />
+                        </div>
+
+                        <div className="form-row">
+                            <label>ИНН</label>
+                            <input
+                                value={supplierForm.inn}
+                                onChange={(e) =>
+                                    setSupplierForm({ ...supplierForm, inn: e.target.value })
+                                }
+                            />
+                        </div>
+
+                        <div className="form-row">
+                            <label>Телефон</label>
+                            <input
+                                value={supplierForm.phone}
+                                onChange={(e) =>
+                                    setSupplierForm({ ...supplierForm, phone: e.target.value })
+                                }
+                            />
+                        </div>
+
+                        <div className="form-row">
+                            <label>Адрес</label>
+                            <input
+                                value={supplierForm.address}
+                                onChange={(e) =>
+                                    setSupplierForm({ ...supplierForm, address: e.target.value })
+                                }
+                            />
+                        </div>
+
+                        <div className="modal-actions">
+                            <button className="btn primary" onClick={sendSupplierRequest}>
+                                Отправить
+                            </button>
+                            <button className="btn ghost" onClick={() => setShowSupplierModal(false)}>
+                                Отмена
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Модалка редактирования имени */}
             {showNameModal && (
                 <div className="modal-overlay">

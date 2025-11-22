@@ -1,121 +1,320 @@
-/* ===== Основная сетка для страниц ===== */
-.admin-page {
-    padding: 20px 30px;
-    color: #eee;
-}
+/* ===========================================
+   ОБЩИЙ СТИЛЬ АДМИНКИ (как профиль)
+=========================================== */
 
-.page-title {
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-    color: #fff;
-}
-
-/* ===== GRID ===== */
-.admin-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+.admin-users-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     gap: 20px;
 }
 
-/* ===== Карточка ===== */
-.admin-card {
+
+/* ========== HEADER ========== */
+
+.admin-header {
+    margin-top: 20px;
+    margin-bottom: 4px;
+}
+
+.admin-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+}
+
+.admin-subtitle {
+    font-size: 14px;
+    color: #9c8ffb;
+    margin-top: 4px;
+}
+
+
+
+/* ===========================================
+   СТАТИСТИКА — КАРТОЧКИ В СТИЛЕ PROFILE
+=========================================== */
+
+.admin-stats {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    flex-wrap: nowrap;
+    padding-top: 10px;
+}
+
+.admin-stat-card {
+    flex: 0 0 auto;
+    width: 180px;
+    height: 130px;
     background: #242424;
     border-radius: 14px;
-    padding: 20px;
-    box-shadow: 0 4px 14px rgba(140, 94, 255, 0.15);
-    transition: 0.25s;
-}
-
-.admin-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(140, 94, 255, 0.25);
-}
-
-.admin-card h3 {
-    margin: 0;
-    color: #fff;
-}
-
-/* ===== Роль ===== */
-.role-badge {
-    padding: 4px 10px;
-    font-size: 0.8rem;
-    border-radius: 8px;
-    font-weight: bold;
-}
-
-.role-user {
-    background: #3b3b3b;
-    color: #ccc;
-}
-
-.role-admin {
-    background: #8c5eff;
-    color: #fff;
-}
-
-/* ===== Кнопки ===== */
-.btn {
-    padding: 8px 12px;
-    border-radius: 10px;
-    border: none;
+    padding: 18px;
+    text-align: center;
+    border: 1px solid rgba(140, 94, 255, 0.15);
+    box-shadow: 0 6px 18px rgba(140, 94, 255, 0.08);
     cursor: pointer;
-    font-weight: 600;
+    transition: 0.25s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.admin-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(140, 94, 255, 0.22);
+}
+
+.admin-stat-card.active-card {
+    border: 1px solid #8c5eff;
+    background: #2e2a36;
+}
+
+.admin-stat-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: #a77bff;
+}
+
+.admin-stat-label {
+    color: #bbb;
+    font-size: 13px;
+}
+
+
+
+/* ===========================================
+   SEARCH + BUTTON
+=========================================== */
+
+.admin-search {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(140, 94, 255, 0.3);
+    background: #1f1f1f;
+    color: #fff;
+    width: 280px;
+    font-size: 14px;
+    outline: none;
     transition: 0.25s;
 }
 
-.btn.primary {
+.admin-search:focus {
+    border-color: #8c5eff;
+    box-shadow: 0 0 10px rgba(140,94,255,0.3);
+}
+
+
+/* ОБЩИЕ КНОПКИ */
+.admin-btn,
+.admin-btn-danger {
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s;
+    border: none;
+    min-width: 140px;
+}
+
+.admin-btn {
     background: linear-gradient(135deg, #8c5eff, #6f48ff);
     color: #fff;
 }
 
-.btn.primary:hover {
+.admin-btn:hover {
     background: linear-gradient(135deg, #a87fff, #805aff);
+    transform: translateY(-2px);
 }
 
-.btn.ghost {
-    background: #6f48ff;
+.admin-btn-danger {
+    background: #ff2b2b;
     color: #fff;
+    margin-left: 10px;
 }
 
-.btn.ghost:hover {
-    background: linear-gradient(135deg, #a87fff, #805aff);
+.admin-btn-danger:hover {
+    background: linear-gradient(135deg, #ff8080, #ff4444);
+    box-shadow: 0 0 10px rgba(255, 94, 94, 0.4);
+    transform: translateY(-2px);
 }
 
-.btn.danger {
-    background: #ff3b3b;
-    color: #fff;
+
+
+/* ===========================================
+   ТАБЛИЦА — КАРТОЧКА КАК PROFILE
+=========================================== */
+
+.admin-table-scroll {
+    flex: 1;
+    min-height: 0;
+
+    overflow-y: auto;
+    padding-right: 12px;
+    margin-right: 12px;
 }
 
-.btn.danger:hover {
-    background: #ff6363;
+.admin-table-wrapper {
+    background: #242424;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(140, 94, 255, 0.15);
+    box-shadow: 0 6px 18px rgba(140,94,255,0.1);
 }
 
-.card-actions {
-    margin-top: 14px;
-    display: flex;
-    gap: 10px;
-}
 
-/* ===== Модалки ===== */
-.modal-username {
-    font-size: 1.1rem;
-    margin-bottom: 12px;
-    color: #ddd;
-    text-align: center;
-}
-
-.modal-actions-block {
-    margin: 20px 0;
-    text-align: center;
-}
-
-.modal-actions-block p {
-    margin-bottom: 10px;
-    color: #ccc;
-}
-
-.full-width {
+.admin-table {
     width: 100%;
-    margin-top: 12px;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.admin-table th {
+    text-align: left;
+    padding: 12px 16px;
+    background: #2e2e2e;
+    color: #cfc5ff;
+    border-bottom: 1px solid #3b3453;
+    font-weight: 600;
+}
+
+.admin-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #3b3453;
+    color: #f0eaff;
+}
+
+.admin-table tbody tr:hover {
+    background: #2a2a2a;
+}
+
+.admin-no-results {
+    padding: 40px 0;
+    text-align: center;
+    color: #cfc9ff;
+    opacity: 0.7;
+}
+
+
+
+/* ===========================================
+   МОДАЛКИ В СТИЛЕ PROFILE
+=========================================== */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-window {
+    background: #242424;
+    padding: 28px;
+    border-radius: 16px;
+    width: 450px;
+    border: 1px solid rgba(140,94,255,0.3);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-title {
+    color: #a77bff;
+    font-size: 20px;
+    margin-bottom: 16px;
+}
+
+.modal-select {
+    width: 100%;
+    padding: 10px 12px;
+    background: #1e1e1e;
+    border: 1px solid rgba(140,94,255,0.3);
+    border-radius: 10px;
+    color: #fff;
+    margin-bottom: 16px;
+    font-size: 15px;
+}
+
+.modal-select:focus {
+    border-color: #8c5eff;
+    box-shadow: 0 0 10px rgba(140,94,255,0.4);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+/* ====== Notifications Page refinements ====== */
+
+/* Центруем и расширяем контейнер */
+.admin-users-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Шапка стала ближе к карточкам */
+.admin-header {
+    margin-bottom: 12px;
+}
+
+/* Улучшенная таблица */
+.admin-table-wrapper {
+    background: #242424;
+    border-radius: 16px;
+    padding: 22px;
+    border: 1px solid rgba(140, 94, 255, 0.18);
+    box-shadow: 0 6px 18px rgba(140, 94, 255, 0.1);
+
+}
+
+/* Широкие столбцы */
+.admin-table th:nth-child(2),
+.admin-table td:nth-child(2) {
+    max-width: 450px;
+    white-space: normal;
+    line-height: 1.45;
+}
+
+/* Плавный hover */
+.admin-table tr:hover {
+    background: rgba(140,94,255,0.08);
+    transition: 0.25s;
+}
+
+/* Делаем кнопку создания чуть крупнее */
+.admin-actions-top .admin-btn {
+    min-width: 180px;
+}
+
+/* Обновляем модалку — делаем шире */
+.modal-window {
+    width: 520px !important;
+}
+
+/* Текстовое поле в модалке красивее */
+.modal-window textarea {
+    background: #1d1d1d;
+    border-radius: 12px;
+    padding: 14px;
+    line-height: 1.45;
+}
+
+/* Контейнер таблицы стал просторнее */
+.admin-scrollable {
+    padding-top: 5px;
+
 }

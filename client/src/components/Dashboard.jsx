@@ -9,7 +9,6 @@ import AdminCompanies from "./admin/AdminCompanies";
 import AdminNotifications from "./admin/AdminNotifications";
 import AdminOrders from "./admin/AdminOrders";
 import AdminSupplierRequests from "./admin/AdminSupplierRequests";
-import AdminSuppliers from "./admin/AdminSuppliers";
 import AdminUsers from "./admin/AdminUsers";
 
 function safeDecodeJWT(token) {
@@ -39,6 +38,7 @@ export default function Dashboard() {
     const [orderStats, setOrderStats] = useState(null);
     const [role, setRole] = useState(null);
     const [orderError, setOrderError] = useState(null);
+
 
 
     useEffect(() => {
@@ -73,6 +73,11 @@ export default function Dashboard() {
             })
             .catch(() => {});
     }, []);
+    useEffect(() => {
+        if (role === "ADMIN") {
+            setActiveTab("admin_users");
+        }
+    }, [role]);
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) return;
@@ -156,7 +161,6 @@ export default function Dashboard() {
     const adminItems = [
         { key: "admin_users", label: "Пользователи", icon: <User size={18} /> },
         { key: "admin_companies", label: "Компании", icon: <Building2 size={18} /> },
-        { key: "admin_suppliers", label: "Поставщики", icon: <Truck size={18} /> },
         { key: "admin_requests", label: "Заявки поставщиков", icon: <MailPlus size={18} /> },
         { key: "admin_orders", label: "Заказы", icon: <Package size={18} /> },
         { key: "admin_notifications", label: "Уведомления", icon: <Bell size={18} /> },
@@ -217,9 +221,6 @@ export default function Dashboard() {
 
             case "admin_companies":
                 return <AdminCompanies />;
-
-            case "admin_suppliers":
-                return <AdminSuppliers />;
 
             case "admin_requests":
                 return <AdminSupplierRequests />;
