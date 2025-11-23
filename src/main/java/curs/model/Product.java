@@ -3,10 +3,11 @@ package curs.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "products")
+@Data
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,9 +16,17 @@ public class Product {
     private String name;
 
     private String category;
+
+    @Column(nullable = false)
     private Double price;
 
-    @ManyToOne
-    @JoinColumn(name = "supplier_id")
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    private String imagePath = "/uploads/products/default.png";
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
 }
+

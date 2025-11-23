@@ -10,8 +10,7 @@ public class CreateOrderRequest {
 
     @Data
     public static class Item {
-        private String productName;
+        private Long productId;
         private int quantity;
-        private double price;
     }
 }

@@ -1,25 +1,23 @@
+// src/main/java/curs/mapper/ProductMapper.java
 package curs.mapper;
 
+import curs.dto.ProductCreateDto;
+import curs.dto.ProductDto;
 import curs.model.Product;
-import curs.dto.ProductDTO;
+import curs.model.Supplier;
 
 public class ProductMapper {
-    public static Product toEntity(ProductDTO dto) {
-        Product p = new Product();
-        p.setId(dto.getId());
-        p.setName(dto.getName());
-        p.setCategory(dto.getCategory());
-        p.setPrice(dto.getPrice());
-        return p;
-    }
 
-    public static ProductDTO toDTO(Product p) {
-        ProductDTO dto = new ProductDTO();
+    public static ProductDto toDto(Product p) {
+        ProductDto dto = new ProductDto();
         dto.setId(p.getId());
         dto.setName(p.getName());
         dto.setCategory(p.getCategory());
         dto.setPrice(p.getPrice());
-        if (p.getSupplier() != null) dto.setSupplierId(p.getSupplier().getId());
+        dto.setDescription(p.getDescription());
+        dto.setImagePath(p.getImagePath());
+        dto.setSupplierId(p.getSupplier().getId());
+        dto.setSupplierCompanyName(p.getSupplier().getCompanyName());
         return dto;
     }
 }

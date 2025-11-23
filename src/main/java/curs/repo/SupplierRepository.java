@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     Optional<Supplier> findByUser(User user);
     List<Supplier> findAllByStatus(SupplierStatus status);
+    Optional<Supplier> findById(Long supplierId);
 }

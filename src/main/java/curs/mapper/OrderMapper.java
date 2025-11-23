@@ -27,11 +27,20 @@ public class OrderMapper {
         dto.setDate(order.getDate());
         dto.setTotalSum(order.getTotalSum());
         dto.setStatus(order.getStatus().name());
-        dto.setItems(order.getItems().stream()
-                .map(i -> new OrderItemDTO(i.getProductName(), i.getQuantity(), i.getPrice()))
-                .collect(Collectors.toList()));
+
+        dto.setItems(
+                order.getItems().stream()
+                        .map(i -> new OrderItemDTO(
+                                i.getProduct().getName(),
+                                i.getQuantity(),
+                                i.getProduct().getPrice()
+                        ))
+                        .collect(Collectors.toList())
+        );
+
         return dto;
     }
+
 }
 
 
