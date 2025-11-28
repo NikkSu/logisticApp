@@ -28,5 +28,9 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
+    @ManyToOne
+    @JoinColumn(name = "supplier_company_id")
+    private Company supplierCompany;
+
 }
 

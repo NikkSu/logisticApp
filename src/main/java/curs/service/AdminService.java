@@ -6,6 +6,7 @@ import curs.mapper.CompanyMapper;
 import curs.mapper.SupplierRequestMapper;
 import curs.model.*;
 import curs.model.SupplierRequest;
+import curs.model.enums.CompanyType;
 import curs.model.enums.Role;
 import curs.model.enums.SupplierStatus;
 import curs.repo.*;
@@ -33,6 +34,7 @@ public class AdminService {
     private final AdminMapper mapper;
     private final SupplierRequestMapper requestMapper;
     private final NotificationService notificationService;
+    private final CompanyService companyService;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -112,18 +114,16 @@ public class AdminService {
     @Transactional
     public void deleteCompanyAsAdmin(Long companyId) {
         Company c = companyRepository.findById(companyId).orElseThrow(() -> new RuntimeException("Company not found"));
-        // notify users and clear company link
+
         List<User> users = userRepository.findByCompanyId(companyId);
         for (User u: users) {
             u.setCompany(null);
             userRepository.save(u);
             notificationService.createNotification(u.getId(), "Компания \"" + c.getName() + "\" была удалена администратором.");
         }
-        // delete company requests and company
         companyRepository.delete(c);
     }
 
-    // ---- Suppliers & Requests ----
     public List<AdminSupplierDto> listSuppliers() {
         return supplierRepository.findAll().stream()
                 .map(mapper::toSupplierDto)
@@ -146,8 +146,44 @@ public class AdminService {
         req.setRejectionReason(null);
         supplierRequestRepository.save(req);
 
+        User u = req.getUser();
+        if (u == null) {
+            throw new RuntimeException("User for supplier request not found");
+        }
+
+        Company oldCompany = u.getCompany();
+        if (oldCompany != null) {
+
+            if (oldCompany.getOwner().getId().equals(u.getId())) {
+                companyService.deleteCompany(oldCompany.getId(), u.getId());
+            }
+            else {
+                u.setCompany(null);
+                userRepository.save(u);
+
+                notificationService.createNotification(
+                        u.getId(),
+                        "Вы были автоматически исключены из компании \"" + oldCompany.getName() +
+                                "\" после одобрения заявки поставщика."
+                );
+            }
+        }
+
+        // ===============================
+        // 2. Создаем нового поставщика
+        // ===============================
+        Company newComp = new Company();
+        newComp.setName(req.getCompanyName());
+        newComp.setAddress(req.getAddress());
+        newComp.setDescription(req.getDescription());
+        newComp.setOwner(u);
+        newComp.setType(CompanyType.valueOf("SUPPLIER"));
+        companyRepository.save(newComp);
+        u.setCompany(newComp);
+        userRepository.save(u);
+
         Supplier s = new Supplier();
-        s.setUser(req.getUser());
+        s.setUser(u);
         s.setCompanyName(req.getCompanyName());
         s.setInn(req.getInn());
         s.setAddress(req.getAddress());
@@ -157,16 +193,17 @@ public class AdminService {
         s.setStatus(SupplierStatus.APPROVED);
 
         s = supplierRepository.save(s);
+        u.setRole(Role.SUPPLIER);
+        userRepository.save(u);
 
-        User u = req.getUser();
-        if (u != null) {
-            u.setRole(Role.SUPPLIER);
-            userRepository.save(u);
-            notificationService.createNotification(u.getId(), "Ваша заявка поставщика одобрена.");
-        }
+        notificationService.createNotification(
+                u.getId(),
+                "Ваша заявка поставщика была одобрена."
+        );
 
         return mapper.toSupplierDto(s);
     }
+
 
     @Transactional
     public void rejectSupplier(Long requestId, String reason) {

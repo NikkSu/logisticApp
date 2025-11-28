@@ -11,4 +11,13 @@ public class CompanyDto {
     private String description;
     private Long ownerId;
     private String ownerName;
+
+    private String phone;
+    private String inn;
+    private String contactEmail;
+    private String website;
+
+    private Double longitude;
+    private Double latitude;
 }
+

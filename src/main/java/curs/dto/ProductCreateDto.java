@@ -9,4 +9,8 @@ public class ProductCreateDto {
     private String category;
     private Double price;
     private String description;
+    private String supplierCompanyName;
+
+    private Double supplierLat;
+    private Double supplierLng;
 }

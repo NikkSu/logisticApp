@@ -6,12 +6,21 @@ import curs.mapper.CompanyMapper;
 import curs.mapper.CompanyRequestMapper;
 import curs.model.*;
 import curs.model.enums.CompanyRequestStatus;
+import curs.model.enums.CompanyType;
 import curs.repo.CompanyRepository;
 import curs.repo.CompanyRequestRepository;
 import curs.repo.UserRepository;
+import org.json.JSONObject;
+import org.json.JSONArray;
+import curs.model.enums.CompanyRequestStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,19 +33,89 @@ public class CompanyService {
     private final CompanyRequestRepository companyRequestRepository;
     private final CompanyRequestMapper companyRequestMapper;
     private final NotificationService notificationService;
+    private final RestTemplate restTemplate;
+
 
     public CompanyService(CompanyRepository companyRepository,
                           UserRepository userRepository,
                           CompanyMapper companyMapper,
                           CompanyRequestRepository companyRequestRepository,
                           CompanyRequestMapper companyRequestMapper,
-                          NotificationService notificationService) {
+                          NotificationService notificationService,
+                          RestTemplate restTemplate) {
         this.companyRepository = companyRepository;
         this.userRepository = userRepository;
         this.companyMapper = companyMapper;
         this.companyRequestRepository = companyRequestRepository;
         this.companyRequestMapper = companyRequestMapper;
         this.notificationService = notificationService;
+        this.restTemplate = restTemplate;
+    }
+    public JSONObject geocodeAddress(String address) {
+        try {
+            String url = "https://nominatim.openstreetmap.org/search?format=json&q=" +
+                    URLEncoder.encode(address, StandardCharsets.UTF_8);
+
+            String json = restTemplate.getForObject(url, String.class);
+
+            JSONArray arr = new JSONArray(json);
+            if (arr.isEmpty()) throw new RuntimeException("Not found");
+
+            return arr.getJSONObject(0);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Geocode failed: " + e.getMessage());
+        }
+    }
+    public String reverseGeocodeNominatim(Double lat, Double lng) {
+        try {
+            String urlStr = "https://nominatim.openstreetmap.org/reverse?" +
+                    "format=json&lat=" + lat + "&lon=" + lng + "&zoom=18&addressdetails=1";
+
+            URL url = new URL(urlStr);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0"); // <-- ОБЯЗАТЕЛЬНО
+
+            if (conn.getResponseCode() != 200) {
+                return null;
+            }
+
+            String jsonStr = new String(conn.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+
+            JSONObject json = new JSONObject(jsonStr);
+            if (json.has("display_name")) {
+                return json.getString("display_name");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Transactional
+    public Company updateLocation(Long id, double lat, double lng) {
+        Company c = companyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+
+        c.setLatitude(lat);
+        c.setLongitude(lng);
+
+        // также пытаемся обратное геокодирование
+        try {
+            String url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lng;
+            String json = restTemplate.getForObject(url, String.class);
+            JSONObject obj = new JSONObject(json);
+
+            if (obj.has("display_name")) {
+                c.setAddress(obj.getString("display_name"));
+            }
+        } catch (Exception ignored) {}
+
+        return companyRepository.save(c);
     }
 
     @Transactional
@@ -51,6 +130,7 @@ public class CompanyService {
         company.setAddress(dto.getAddress());
         company.setDescription(dto.getDescription());
         company.setOwner(user);
+        company.setType(CompanyType.valueOf("NORMAL"));
         companyRepository.save(company);
 
         user.setCompany(company);
@@ -62,23 +142,25 @@ public class CompanyService {
 
 
     public List<CompanyDto> getAll() {
-        return companyRepository.findAll().stream().map(companyMapper::toDto).collect(Collectors.toList());
+        return companyRepository.findAllByType(CompanyType.NORMAL)
+                .stream()
+                .map(companyMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<CompanyDto> getAllSuppliers() {
+        return companyRepository.findAllByType(CompanyType.SUPPLIER)
+                .stream()
+                .map(companyMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     public CompanyDto getById(Long id) {
         Company company = companyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Company not found"));
-
-        CompanyDto dto = new CompanyDto();
-        dto.setId(company.getId());
-        dto.setName(company.getName());
-        dto.setAddress(company.getAddress());
-        dto.setDescription(company.getDescription());
-        dto.setLogoPath(company.getLogoPath());
-        dto.setOwnerId(company.getOwner() != null ? company.getOwner().getId() : null);
-
-        return dto;
+        return companyMapper.toDto(company);
     }
+
 
     @Transactional
     public CompanyDto update(Long id, CompanyDto dto) {

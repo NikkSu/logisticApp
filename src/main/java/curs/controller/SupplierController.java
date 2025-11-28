@@ -5,9 +5,11 @@ import curs.dto.ProductDto;
 import curs.dto.SupplierRequestDto;
 import curs.mapper.ProductMapper;
 import curs.mapper.SupplierRequestMapper;
+import curs.model.Company;
 import curs.model.Supplier;
 import curs.model.SupplierRequest;
 import curs.model.User;
+import curs.repo.CompanyRepository;
 import curs.repo.SupplierRepository;
 import curs.service.FileService;
 import curs.service.ProductService;
@@ -34,6 +36,7 @@ public class SupplierController {
     private final ProductService productService;
     private final SupplierRepository supplierRepository;
     private final FileService fileService;
+    private final CompanyRepository companyRepository;
 
     private User getUser(Principal principal) {
         return userService.findByUsername(principal.getName());
@@ -49,6 +52,23 @@ public class SupplierController {
         User user = getUser(principal);
         SupplierRequest req = supplierService.createRequest(user, dto);
         return supplierRequestMapper.toDto(req);
+    }
+    @GetMapping("/by-user/{userId}")
+    public Long getSupplierIdByUserId(@PathVariable Long userId) {
+        Supplier supplier = supplierRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Supplier not found for user " + userId));
+
+        return supplier.getId();
+    }
+    @GetMapping("/by-company/{companyId}")
+    public Long getSupplierIdByCompany(@PathVariable Long companyId) {
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new RuntimeException("Company not found: " + companyId));
+
+        Supplier supplier = supplierRepository.findByCompanyName(company.getName())
+                .orElseThrow(() -> new RuntimeException("Supplier not found for company name: " + company.getName()));
+
+        return supplier.getId();
     }
 
     @GetMapping("/status")

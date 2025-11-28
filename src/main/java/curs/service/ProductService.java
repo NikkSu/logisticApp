@@ -28,14 +28,15 @@ public class ProductService {
     private final FileService fileService;
 
     public List<Product> listBySupplierUser(Long userId) {
-        Supplier supplier = supplierRepository.findByUser(
-                userRepository.findById(userId)
-                        .orElseThrow(() -> new RuntimeException("User not found"))
-        ).orElseThrow(() -> new RuntimeException("Not a supplier"));
+        User u = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return productRepository.findAllBySupplier(supplier);
+        Supplier sup = supplierRepository.findByUser(u)
+                .orElseThrow(() -> new RuntimeException("Supplier not found"));
+
+        return productRepository.findAllBySupplier(sup);
     }
-    public List<Product> listBySupplier(Long supplierId)
+        public List<Product> listBySupplier(Long supplierId)
     { Supplier s = supplierRepository.findById(supplierId).orElseThrow(()
             -> new RuntimeException("Supplier not found"));
         return productRepository.findAllBySupplier(s); }
@@ -51,7 +52,7 @@ public class ProductService {
         p.setPrice(dto.getPrice());
         p.setDescription(dto.getDescription());
         p.setSupplier(supplier);
-
+        p.setSupplierCompany(user.getCompany());
         return productRepository.save(p);
     }
 
@@ -96,6 +97,16 @@ public class ProductService {
     }
 
     public List<Product> listAll() {
+        return productRepository.findAll();
+    }
+    public List<Product> findBySupplier(Long supplierId) {
+        Supplier sup = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new RuntimeException("Supplier not found"));
+
+        return productRepository.findAllBySupplier(sup);
+    }
+
+    public List<Product> findAll() {
         return productRepository.findAll();
     }
 }

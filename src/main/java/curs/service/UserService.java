@@ -1,6 +1,5 @@
 package curs.service;
 
-import ch.qos.logback.classic.encoder.JsonEncoder;
 import curs.mapper.UserMapper;
 import curs.model.User;
 import curs.repo.UserRepository;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 import curs.dto.UserDTO;
 
@@ -50,7 +50,7 @@ public class UserService {
         return dto;
     }
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.getByUsername(username);
     }
     public User findById(Long id) {
         return userRepository.findById(id)
@@ -72,6 +72,11 @@ public class UserService {
             u.setPassword(passwordEncoder.encode("123456")); // default password
         }
         return userRepository.save(u);
+    }
+    public Long getUserIdByPrincipal(String principalName) {
+        return userRepository.findByUsername(principalName)
+                .map(User::getId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
 

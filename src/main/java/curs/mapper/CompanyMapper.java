@@ -16,9 +16,19 @@ public class CompanyMapper {
         dto.setAddress(company.getAddress());
         dto.setLogoPath(company.getLogoPath());
         dto.setDescription(company.getDescription());
+
+        dto.setInn(company.getInn());
+        dto.setPhone(company.getPhone());
+        dto.setContactEmail(company.getContactEmail());
+        dto.setWebsite(company.getWebsite());
+
         dto.setOwnerId(company.getOwner()!=null ? company.getOwner().getId() : null);
+        dto.setLongitude(company.getLongitude());
+        dto.setLatitude(company.getLatitude());
+
         return dto;
     }
+
 
     public Company toEntity(CompanyDto dto) {
         if (dto == null) return null;

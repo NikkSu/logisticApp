@@ -37,5 +37,8 @@ public class Supplier {
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products = new ArrayList<>();
     private String logoPath = "/uploads/supplier-logos/default.png";
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
 
 }

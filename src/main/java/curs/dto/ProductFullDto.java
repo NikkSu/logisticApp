@@ -1,20 +1,20 @@
-// src/main/java/curs/dto/ProductDto.java
 package curs.dto;
 
 import lombok.Data;
 
 @Data
-public class ProductDto {
+public class ProductFullDto {
     private Long id;
     private String name;
     private String category;
-    private Double price;
-    private String imagePath;
+    private double price;
     private String description;
+    private String imagePath;
+
+    // Данные о поставщике
     private Long supplierId;
     private String supplierCompanyName;
     private String supplierAddress;
     private Double supplierLat;
     private Double supplierLng;
 }
-
