@@ -88,21 +88,21 @@ export default function AdminOrders() {
                 </div>
 
                 <div
-                    className={`admin-stat-card ${statusFilter === "PROCESSING" ? "active-card" : ""}`}
-                    onClick={() => setStatusFilter("PROCESSING")}
+                    className={`admin-stat-card ${statusFilter === "SENT" ? "active-card" : ""}`}
+                    onClick={() => setStatusFilter("SENT")}
                 >
                     <div className="admin-stat-value">
-                        {orders.filter(o => o.status === "PROCESSING").length}
+                        {orders.filter(o => o.status === "SENT").length}
                     </div>
                     <div className="admin-stat-label">В процессе</div>
                 </div>
 
                 <div
-                    className={`admin-stat-card ${statusFilter === "DONE" ? "active-card" : ""}`}
-                    onClick={() => setStatusFilter("DONE")}
+                    className={`admin-stat-card ${statusFilter === "RECEIVED" ? "active-card" : ""}`}
+                    onClick={() => setStatusFilter("RECEIVED")}
                 >
                     <div className="admin-stat-value">
-                        {orders.filter(o => o.status === "DONE").length}
+                        {orders.filter(o => o.status === "RECEIVED").length}
                     </div>
                     <div className="admin-stat-label">Выполнено</div>
                 </div>

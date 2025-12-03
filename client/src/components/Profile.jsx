@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../styles/ProfilePage.css";
+import ModalMap from "../components/ModalMap";
 
 const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8080/api";
 
@@ -18,7 +19,16 @@ export default function ProfilePage() {
     const [showCompanyModal, setShowCompanyModal] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [showEditCompanyModal, setShowEditCompanyModal] = useState(false);
-    const [companyForm, setCompanyForm] = useState({ name: "", address: "", description: "" });
+    const [companyForm, setCompanyForm] = useState({
+        name: "",
+        address: "",
+        description: "",
+        latitude: null,
+        longitude: null
+    });
+
+    const [showMapModal, setShowMapModal] = useState(false);
+
     const [joinCompanyName, setJoinCompanyName] = useState("");
     const [pendingRequests, setPendingRequests] = useState([]);
     const [loadingRequests, setLoadingRequests] = useState(false);
@@ -147,6 +157,32 @@ export default function ProfilePage() {
             } else {
                 setError("Ошибка при создании компании");
             }
+        }
+    }
+
+    async function updateCompanyLocation(lat, lng) {
+        try {
+            const res = await axios.post(
+                `${API_BASE}/companies/${user.company.id}/location`,
+                { lat, lng },
+                { headers: getTokenHeader() }
+            );
+
+            const updated = res.data;
+            // { address: "Новый адрес...", lat: ..., lng: ... }
+
+            // Обновляем данные в модалке
+            setCompanyForm(prev => ({
+                ...prev,
+                address: updated.address,   // <-- вот это добавили
+                latitude: updated.lat,
+                longitude: updated.lng
+            }));
+
+            fetchMe(); // обновляем глобальные данные
+        } catch (e) {
+            console.error(e);
+            setError("Ошибка при обновлении координат");
         }
     }
 
@@ -430,51 +466,51 @@ export default function ProfilePage() {
 
                         </div>
                         <p className="company-desc"></p>
-                            {isOwner && (
-                                <label className="change-avatar">
-                                    Загрузить логотип
-                                    <input type="file" accept="image/*" onChange={handleCompanyLogoUpload}/>
-                                </label>
-                            )}
-                            <p className="company-desc">{user.company.description}</p>
+                        {isOwner && (
+                            <label className="change-avatar">
+                                Загрузить логотип
+                                <input type="file" accept="image/*" onChange={handleCompanyLogoUpload}/>
+                            </label>
+                        )}
+                        <p className="company-desc">{user.company.description}</p>
 
-                            {isOwner && (
-                                <div className="requests-block">
-                                    <h4>Заявки на вступление</h4>
-                                    {loadingRequests ? (
-                                        <div>Загрузка...</div>
-                                    ) : pendingRequests.length === 0 ? (
-                                        <div className="muted">Нет ожидающих заявок</div>
-                                    ) : (
-                                        <ul className="requests-list">
-                                            {pendingRequests.map((r) => (
-                                                <li key={r.id} className="request-item">
-                                                    <div className="request-info">
-                                                        <div className="requester-name">{r.requesterUsername}</div>
-                                                        <div className="request-meta">id: {r.requesterId}</div>
-                                                    </div>
-                                                    <div className="request-actions">
-                                                        <button
-                                                            className="btn small"
-                                                            onClick={() => approveRequest(r.id, true)}
-                                                        >
-                                                            Одобрить
-                                                        </button>
-                                                        <button
-                                                            className="btn small ghost"
-                                                            onClick={() => approveRequest(r.id, false)}
-                                                        >
-                                                            Отклонить
-                                                        </button>
-                                                    </div>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                </div>
-                            )}
+                        {isOwner && (
+                            <div className="requests-block">
+                                <h4>Заявки на вступление</h4>
+                                {loadingRequests ? (
+                                    <div>Загрузка...</div>
+                                ) : pendingRequests.length === 0 ? (
+                                    <div className="muted">Нет ожидающих заявок</div>
+                                ) : (
+                                    <ul className="requests-list">
+                                        {pendingRequests.map((r) => (
+                                            <li key={r.id} className="request-item">
+                                                <div className="request-info">
+                                                    <div className="requester-name">{r.requesterUsername}</div>
+                                                    <div className="request-meta">id: {r.requesterId}</div>
+                                                </div>
+                                                <div className="request-actions">
+                                                    <button
+                                                        className="btn small"
+                                                        onClick={() => approveRequest(r.id, true)}
+                                                    >
+                                                        Одобрить
+                                                    </button>
+                                                    <button
+                                                        className="btn small ghost"
+                                                        onClick={() => approveRequest(r.id, false)}
+                                                    >
+                                                        Отклонить
+                                                    </button>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+                        )}
                     </div>
-                    ) : (
+                ) : (
                     <div className="no-company">
                         <div>Вы ещё не присоединены ни к одной компании</div>
                         <div className="no-company-actions">
@@ -553,21 +589,38 @@ export default function ProfilePage() {
                             <label>Название</label>
                             <input
                                 value={companyForm.name}
-                                onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })}
+                                onChange={(e) => setCompanyForm({...companyForm, name: e.target.value})}
                             />
                         </div>
                         <div className="form-row">
                             <label>Адрес</label>
                             <input
                                 value={companyForm.address}
-                                onChange={(e) => setCompanyForm({ ...companyForm, address: e.target.value })}
+                                onChange={(e) => setCompanyForm({...companyForm, address: e.target.value})}
                             />
                         </div>
+                        <div className="form-row">
+                            <button
+                                className="btn"
+                                type="button"
+                                onClick={() => setShowMapModal(true)}
+                                style={{marginTop: "10px"}}
+                            >
+                                Выбрать на карте
+                            </button>
+
+                            {companyForm.latitude && companyForm.longitude && (
+                                <div className="muted" style={{fontSize: "12px", marginTop: "5px"}}>
+                                    Текущие координаты: {companyForm.latitude}, {companyForm.longitude}
+                                </div>
+                            )}
+                        </div>
+
                         <div className="form-row">
                             <label>Описание</label>
                             <textarea
                                 value={companyForm.description}
-                                onChange={(e) => setCompanyForm({ ...companyForm, description: e.target.value })}
+                                onChange={(e) => setCompanyForm({...companyForm, description: e.target.value})}
                             />
                         </div>
                         <div className="modal-actions">
@@ -577,6 +630,17 @@ export default function ProfilePage() {
                         </div>
                     </div>
                 </div>
+            )}
+            {showMapModal && (
+                <ModalMap
+                    initialLat={companyForm.latitude || 55.751244}
+                    initialLng={companyForm.longitude || 37.618423}
+                    onSelect={(lat, lng) => {
+                        updateCompanyLocation(lat, lng);
+                        setShowMapModal(false);
+                    }}
+                    onClose={() => setShowMapModal(false)}
+                />
             )}
 
             {/* Модалка смены пароля */}
