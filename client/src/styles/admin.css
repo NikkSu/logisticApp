@@ -39,7 +39,7 @@
 .admin-stats {
     display: flex;
     gap: 16px;
-    overflow-x: auto;
+
     padding-bottom: 6px;
     flex-wrap: nowrap;
     padding-top: 10px;
@@ -317,4 +317,92 @@
 .admin-scrollable {
     padding-top: 5px;
 
+}
+.btn-status {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    border: none;
+    background: #a77bff;
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+.btn-status:hover {
+    background: #8c5eff;
+}
+.modal .product-item {
+    color: #000;
+}
+
+
+
+.order-items-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.order-item-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+}
+
+/* Контейнер для кнопок — флекс, по центру, с зазором */
+.buttons-block {
+    display: flex;
+    gap: 12px; /* расстояние между кнопками */
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* Общие стили для всех кнопок в блоке */
+.buttons-block button {
+    flex: 1; /* делят ширину поровну */
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Кнопка "Отправить" — фиолетовая */
+.btn-sent {
+    background: #a77bff;
+    color: white;
+
+}
+
+.btn-sent:hover {
+    background: linear-gradient(135deg, #b89cff, #9a6aff);
+    box-shadow: 0 5px 12px rgba(167, 123, 255, 0.3);
+    transition: 0.3s ease;
+}
+
+.btn-sent:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(167, 123, 255, 0.25);
+}
+
+/* Кнопка "Отклонить" — красная */
+.btn-cancell {
+    background: #ff2b2b;
+    color: white;
+}
+
+.btn-cancell:hover {
+    background: linear-gradient(135deg, #ff8080, #ff4444);
+    box-shadow: 0 5px 12px rgba(255, 43, 43, 0.3);
+    transition: 0.3s ease;
+}
+
+.btn-cancell:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(255, 43, 43, 0.25);
 }

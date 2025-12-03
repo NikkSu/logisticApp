@@ -5,6 +5,8 @@ import curs.model.enums.SupplierStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "suppliers")
@@ -32,4 +34,11 @@ public class Supplier {
     private SupplierStatus status;
 
     private String rejectionReason;
+    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> products = new ArrayList<>();
+    private String logoPath = "/uploads/supplier-logos/default.png";
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
+
 }

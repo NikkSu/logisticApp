@@ -16,9 +16,19 @@ public class CompanyMapper {
         dto.setAddress(company.getAddress());
         dto.setLogoPath(company.getLogoPath());
         dto.setDescription(company.getDescription());
+
+        dto.setInn(company.getInn());
+        dto.setPhone(company.getPhone());
+        dto.setContactEmail(company.getContactEmail());
+        dto.setWebsite(company.getWebsite());
+
         dto.setOwnerId(company.getOwner()!=null ? company.getOwner().getId() : null);
+        dto.setLongitude(company.getLongitude());
+        dto.setLatitude(company.getLatitude());
+
         return dto;
     }
+
 
     public Company toEntity(CompanyDto dto) {
         if (dto == null) return null;
@@ -37,5 +47,9 @@ public class CompanyMapper {
         if (dto.getAddress() != null) company.setAddress(dto.getAddress());
         if (dto.getLogoPath() != null) company.setLogoPath(dto.getLogoPath());
         if (dto.getDescription() != null) company.setDescription(dto.getDescription());
+        if (dto.getInn() != null) company.setInn(dto.getInn());
+        if (dto.getPhone() != null) company.setPhone(dto.getPhone());
+        if (dto.getContactEmail() != null) company.setContactEmail(dto.getContactEmail());
+        if (dto.getWebsite() != null) company.setWebsite(dto.getWebsite());
     }
 }

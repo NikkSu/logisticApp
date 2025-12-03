@@ -39,8 +39,7 @@ body {
     flex-direction: column;
     justify-content: flex-start;
     overflow: hidden;
-    animation: fadeIn 0.6s ease forwards;
-    opacity: 0;
+    animation: fadeIn 0.6s ease ;
     transform: translateY(20px);
 }
 

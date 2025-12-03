@@ -2,16 +2,24 @@ package curs.controller;
 
 import curs.dto.CompanyDto;
 import curs.dto.CompanyRequestDto;
+import curs.dto.LocationDto;
 import curs.model.Company;
 import curs.model.User;
+import curs.repo.CompanyRepository;
 import curs.security.JwtUtil;
 import curs.service.CompanyService;
 import curs.service.FileService;
 import curs.service.UserService;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -22,12 +30,14 @@ public class CompanyController {
     private final CompanyService companyService;
     private final JwtUtil jwtUtil;
     private final FileService fileService;
+    private final CompanyRepository companyRepo;
 
-    public CompanyController(CompanyService companyService, JwtUtil jwtUtil, UserService userService, FileService fileService) {
+    public CompanyController(CompanyService companyService, JwtUtil jwtUtil, UserService userService, FileService fileService, CompanyRepository companyRepo) {
         this.companyService = companyService;
         this.jwtUtil = jwtUtil;
         this.userService = userService;
         this.fileService = fileService;
+        this.companyRepo = companyRepo;
     }
 
     @PostMapping("/create")
@@ -41,6 +51,10 @@ public class CompanyController {
     @GetMapping("/")
     public ResponseEntity<List<CompanyDto>> all() {
         return ResponseEntity.ok(companyService.getAll());
+    }
+    @GetMapping("/suppliers")
+    public ResponseEntity<List<CompanyDto>> suppliers() {
+        return ResponseEntity.ok(companyService.getAllSuppliers());
     }
 
     @GetMapping("/my")
@@ -58,6 +72,56 @@ public class CompanyController {
     @GetMapping("/{id}")
     public ResponseEntity<CompanyDto> getOne(@PathVariable Long id) {
         return ResponseEntity.ok(companyService.getById(id));
+    }
+
+    @PostMapping("/{id}/geocode")
+    public ResponseEntity<?> geocode(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String address = body.get("address");
+        if (address == null || address.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Address required"));
+        }
+
+        try {
+            JSONObject geo = companyService.geocodeAddress(address);
+            double lat = geo.getDouble("lat");
+            double lng = geo.getDouble("lon");
+
+            return ResponseEntity.ok(Map.of(
+                    "lat", lat,
+                    "lng", lng
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Not found"));
+        }
+    }
+
+
+    @PostMapping("/{id}/location")
+    public ResponseEntity<?> updateLocation(
+            @PathVariable Long id,
+            @RequestBody LocationDto coords
+
+    ) {
+        Double lat = coords.getLat();
+        Double lng = coords.getLng();
+
+        Company company = companyRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+
+        company.setLatitude(lat);
+        company.setLongitude(lng);
+
+        // Обратное геокодирование
+        String address = reverseGeocodeNominatim(lat, lng);
+        if (address != null) company.setAddress(address);
+
+        companyRepo.save(company);
+
+        return ResponseEntity.ok(Map.of(
+                "address", company.getAddress(),
+                "lat", lat,
+                "lng", lng
+        ));
     }
 
     @PutMapping("/{id}")
@@ -123,4 +187,34 @@ public class CompanyController {
 
         return jwtUtil.extractUserId(token);
     }
+    public String reverseGeocodeNominatim(Double lat, Double lng) {
+        try {
+            String urlStr = "https://nominatim.openstreetmap.org/reverse?" +
+                    "format=json&lat=" + lat + "&lon=" + lng + "&zoom=18&addressdetails=1";
+
+            URL url = new URL(urlStr);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0"); // <-- ОБЯЗАТЕЛЬНО
+
+            if (conn.getResponseCode() != 200) {
+                return null;
+            }
+
+            String jsonStr = new String(conn.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+
+            JSONObject json = new JSONObject(jsonStr);
+            if (json.has("display_name")) {
+                return json.getString("display_name");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 }
+
