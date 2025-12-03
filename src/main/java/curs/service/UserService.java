@@ -25,6 +25,7 @@ public class UserService {
     }
 
     public List<User> getAll() { return userRepository.findAll(); }
+
     public UserDTO getById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));

@@ -50,6 +50,7 @@ public class UserController {
     public ResponseEntity<?> all() {
         return ResponseEntity.ok(userService.getAll());
     }
+
     @PostMapping("/upload-avatar")
     public ResponseEntity<?> uploadAvatar(
             @RequestHeader("Authorization") String authHeader,

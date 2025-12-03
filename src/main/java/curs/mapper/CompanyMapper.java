@@ -47,5 +47,9 @@ public class CompanyMapper {
         if (dto.getAddress() != null) company.setAddress(dto.getAddress());
         if (dto.getLogoPath() != null) company.setLogoPath(dto.getLogoPath());
         if (dto.getDescription() != null) company.setDescription(dto.getDescription());
+        if (dto.getInn() != null) company.setInn(dto.getInn());
+        if (dto.getPhone() != null) company.setPhone(dto.getPhone());
+        if (dto.getContactEmail() != null) company.setContactEmail(dto.getContactEmail());
+        if (dto.getWebsite() != null) company.setWebsite(dto.getWebsite());
     }
 }

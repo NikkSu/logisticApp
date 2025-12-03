@@ -25,7 +25,6 @@ public class OrderController {
 
     @GetMapping
     public ResponseEntity<?> getMyCompanyOrders(Principal principal) {
-        System.out.println(">>> PRINCIPAL = " + principal.getName());
         return ResponseEntity.ok(service.getOrdersForUser(serviceUserId(principal)));
     }
 
