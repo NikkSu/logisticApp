@@ -71,7 +71,3 @@ All business logic is handled within a single backend application.
 
 ### Frontend
 - React
-
-
-## Project Structure
-
